@@ -43,9 +43,10 @@ namespace Game_Systems.GameInstance {
             AsyncOperation LoadOp = SceneManager.LoadSceneAsync("MapScene", LoadSceneMode.Additive);
             LoadOp.allowSceneActivation = false;
             while (!LoadOp.isDone) {
-                if (Input.GetKey(KeyCode.Space)) {
-                    LoadOp.allowSceneActivation = true;
-
+                if(LoadOp.progress !< 90){
+                    if (Input.GetKey(KeyCode.Space)) {
+                        LoadOp.allowSceneActivation = true;
+                    }
                 }
                 yield return null;
             }
