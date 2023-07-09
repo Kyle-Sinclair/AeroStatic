@@ -1,0 +1,66 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Game_Systems.Services;
+using UnityEngine;
+
+namespace Game_Systems.Services {
+
+    public class ServiceLocator {
+        
+        private ServiceLocator() { }
+        
+        //Static method used for any object to get a service if needed
+        public static ServiceLocator Current { get; private set; }
+
+        [SerializeField]
+        private readonly Dictionary<string, IGameService> _services = new Dictionary<string, IGameService>();
+
+        public T Get<T>() where T : IGameService
+        {
+            string key = typeof(T).Name;
+            if (!_services.ContainsKey(key))
+            {
+                Debug.LogError($"{key} not registered with {GetType().Name}");
+                throw new InvalidOperationException();
+            }
+
+            return (T)_services[key];
+        }
+        
+        public void Register<T>(T service) where T : IGameService
+        {
+            string key = typeof(T).Name;
+            if (_services.ContainsKey(key))
+            {
+                Debug.LogError($"Attempted to register service of type {key} which is already registered with the {GetType().Name}.");
+                return;
+            }
+#if UNITY_EDITOR
+            Debug.Log($"Added a service of type {key}");
+#endif
+            _services.Add(key, service);
+        }
+
+        /// <summary>
+        /// Unregisters the service from the current service locator.
+        /// </summary>
+        /// <typeparam name="T">Service type.</typeparam>
+        public void Unregister<T>() where T : IGameService
+        {
+            string key = typeof(T).Name;
+            if (!_services.ContainsKey(key))
+            {
+                Debug.LogError($"Attempted to unregister service of type {key} which is not registered with the {GetType().Name}.");
+                return;
+            }
+
+            _services.Remove(key);
+        }
+        public static void Initialize()
+        {
+            Current = new ServiceLocator();
+        }
+    }
+
+}
