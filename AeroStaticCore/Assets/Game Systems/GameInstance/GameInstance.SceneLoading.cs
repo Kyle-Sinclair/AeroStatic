@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Game_Systems.Services;
 using UnityEngine;
 using System.Collections;
-
+using System.Runtime.Serialization;
 using UnityEngine.SceneManagement;
 
 namespace Game_Systems.GameInstance {
@@ -11,6 +11,9 @@ namespace Game_Systems.GameInstance {
 
         public int LoadProgress { get; set; }
         //public int TotalLoadingSteps { get; set; }
+
+        public delegate void InitializeOnceLevelSetActive();
+        InitializeOnceLevelSetActive _onSceneSetAsActive;
 
         private void OpenMainMenu() {
             if (SceneManager.GetSceneByName("MapScene").IsValid()) {
@@ -28,8 +31,7 @@ namespace Game_Systems.GameInstance {
             //Raise a black curtain
             //Initialize and register any services the coming scene will require - So a Map Creator, a map manager, an agent manager, a narrative manager
             LoadProgress = 0;
-            MapCreator mc = new MapCreator();
-            ServiceLocator.Current.Register(mc);
+          
             //Hook up any connections between these entites as needed
             //Load the scene
             //when loading is done, drop the curtain
@@ -44,22 +46,23 @@ namespace Game_Systems.GameInstance {
             //Load the scene
             //when loading is done, drop the curtain
             AsyncOperation LoadOp = SceneManager.LoadSceneAsync("MapScene", LoadSceneMode.Additive);
-            LoadOp.allowSceneActivation = true;
+            LoadOp.allowSceneActivation = false;
 
             while (!LoadOp.isDone) {
-               
+                if (LoadOp.progress !< 90) {
+                    LoadOp.allowSceneActivation = true;
+                }
                 yield return null;
             }
             SceneManager.SetActiveScene(SceneManager.GetSceneByName("MapScene"));
-
             LoadProgress++;
-
             Debug.Log(LoadProgress);
         }
-
         private void CloseScene() {
+        }
 
-
+        public void GetObjectData(SerializationInfo info, StreamingContext context) {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -1,24 +1,39 @@
 using Game_Systems.Services;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace Game_Systems {
     public class LevelInstance : MonoBehaviour
     {
-        delegate void MyDelegate();
-        MyDelegate attack;
+        
         
         void Start()
         {
             print("Initializer active");
-            ServiceLocator.Current.Get<GameInstance.GameInstance>();
-            //ServiceLocator.Current.Get<MapCreator>().CreateMap();
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
 
         }
 
-        // public static void GetService(ServiceSystem WantedService) {
-        //     
-        // }
+
+        private void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.Scene currentScene) {
+            Debug.Log("The map scene should be active at this point");
+            
+            
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+
+        }
+
+        private void GenerateMap() {
+            ServiceLocator.Current.Get<MapCreator>().CreateMap();
+
+        }
+        private void WireInputToInpuitHandler() {
+            GetComponent<PlayerInput>().actions.
+            ServiceLocator.Current.Get<InputHandlerService>();
+
+        }
+        
 
     }
 }
