@@ -9,8 +9,9 @@ namespace Game_Systems.GameInstance {
     public partial class GameInstance : MonoBehaviour {
         // Partial class file for Game Instance that handles all scene opening and closing
 
+        public int LoadProgress { get; set; }
+        //public int TotalLoadingSteps { get; set; }
 
-       
         private void OpenMainMenu() {
             if (SceneManager.GetSceneByName("MapScene").IsValid()) {
                 SceneManager.UnloadSceneAsync("MapScene");
@@ -26,6 +27,7 @@ namespace Game_Systems.GameInstance {
         private void OpenMapScene() {
             //Raise a black curtain
             //Initialize and register any services the coming scene will require - So a Map Creator, a map manager, an agent manager, a narrative manager
+            LoadProgress = 0;
             MapCreator mc = new MapCreator();
             ServiceLocator.Current.Register(mc);
             //Hook up any connections between these entites as needed
@@ -36,20 +38,23 @@ namespace Game_Systems.GameInstance {
 
         }
         private IEnumerator OpenMapSceneAsync() {
-          
+
+            //
             //Hook up any connections between these entites as needed
             //Load the scene
             //when loading is done, drop the curtain
             AsyncOperation LoadOp = SceneManager.LoadSceneAsync("MapScene", LoadSceneMode.Additive);
-            LoadOp.allowSceneActivation = false;
+            LoadOp.allowSceneActivation = true;
+
             while (!LoadOp.isDone) {
-                if(LoadOp.progress !< 90){
-                    if (Input.GetKey(KeyCode.Space)) {
-                        LoadOp.allowSceneActivation = true;
-                    }
-                }
+               
                 yield return null;
             }
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName("MapScene"));
+
+            LoadProgress++;
+
+            Debug.Log(LoadProgress);
         }
 
         private void CloseScene() {
