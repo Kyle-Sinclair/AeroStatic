@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 377e8115a856e184692fdfc0b7d29a3c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _gameCameraPrefab: {fileID: 5663783855147127617, guid: 7702693c5321f6a45beed7b876c509a8,
+      type: 3}
+  - _appCamera: {fileID: 4387515048683052059, guid: 5b3b7a435d40459409e9b9f93ea6f7e0,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

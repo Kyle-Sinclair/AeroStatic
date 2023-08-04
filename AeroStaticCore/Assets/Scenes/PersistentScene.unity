@@ -153,6 +153,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mapCreatorService: {fileID: 11400000, guid: c4ebad36494acab41a852e467483ec47, type: 2}
+  _cameraManagerService: {fileID: 11400000, guid: 535639f74c3a22e40b0ad244f29beacd,
+    type: 2}
+  _inputHandlerService: {fileID: 11400000, guid: 163c615a4c23e8c479086edb2a29085b,
+    type: 2}
+  _gameCamera: {fileID: 2460358039093602467, guid: 7702693c5321f6a45beed7b876c509a8,
+    type: 3}
 --- !u!4 &312407959
 Transform:
   m_ObjectHideFlags: 0

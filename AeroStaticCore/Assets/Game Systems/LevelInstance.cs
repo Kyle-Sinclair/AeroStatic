@@ -21,16 +21,15 @@ namespace Game_Systems {
             
             
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
-
+            GenerateMap();
         }
 
         private void GenerateMap() {
             ServiceLocator.Current.Get<MapCreator>().CreateMap();
 
         }
-        private void WireInputToInpuitHandler() {
-            GetComponent<PlayerInput>().actions.
-            ServiceLocator.Current.Get<InputHandlerService>();
+        private void WireInputToInputHandler() {
+        
 
         }
         

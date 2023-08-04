@@ -19,6 +19,7 @@ namespace Game_Systems.GameInstance {
             if (SceneManager.GetSceneByName("MapScene").IsValid()) {
                 SceneManager.UnloadSceneAsync("MapScene");
             }
+            ServiceLocator.Current.Get<CameraManager>().CreateAppCamera();
 
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Additive);
         }
@@ -28,6 +29,7 @@ namespace Game_Systems.GameInstance {
         }
         
         private void OpenMapScene() {
+            
             //Raise a black curtain
             //Initialize and register any services the coming scene will require - So a Map Creator, a map manager, an agent manager, a narrative manager
             LoadProgress = 0;
@@ -55,6 +57,9 @@ namespace Game_Systems.GameInstance {
                 yield return null;
             }
             SceneManager.SetActiveScene(SceneManager.GetSceneByName("MapScene"));
+            ServiceLocator.Current.Get<CameraManager>().CreateGameCamera();
+            yield return new WaitForEndOfFrame();
+            ServiceLocator.Current.Get<CameraManager>().SwapToGameCamera();
             LoadProgress++;
             Debug.Log(LoadProgress);
         }
