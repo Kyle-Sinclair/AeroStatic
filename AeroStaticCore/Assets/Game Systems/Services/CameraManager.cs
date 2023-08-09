@@ -8,8 +8,9 @@ namespace Game_Systems.Services {
     public class CameraManager : GameService {
         
         [SerializeField] private GameObject _gameCameraPrefab;
-        [SerializeField] private GameObject _appCamera; 
-        
+        [SerializeField] private bool _debugGameCamerasRayCast;
+        [SerializeField] private GameObject _appCamera;
+        private Vector3 _startPosition;
         private GameCamera _inGameCamera = null;
         private ApplicationCamera _inMenuAppCamera = null;
         
@@ -23,6 +24,8 @@ namespace Game_Systems.Services {
             }
 
             _inGameCamera = gc;
+            gc._debugRayCast = _debugGameCamerasRayCast;
+            _inGameCamera.transform.position = _startPosition;
         }
         
         public void CreateAppCamera() {
@@ -44,6 +47,10 @@ namespace Game_Systems.Services {
             _inGameCamera.DisableCamera();
             _inMenuAppCamera.EnableCamera();
         }
-       
+
+        public override void ConfigureService(GameInstance.GameInstance gameInstance) {
+            _startPosition = new Vector3((float)gameInstance._mapConfig._mapSize / 2, 0,
+                (float)gameInstance._mapConfig._mapSize / 2);
+        }
     }
 }

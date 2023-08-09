@@ -57,6 +57,12 @@ namespace Game_Systems.Services {
 
             _services.Remove(key);
         }
+
+        public void ConfigureServices(GameInstance.GameInstance gameInstance) {
+            foreach (var VARIABLE in _services) {
+                VARIABLE.Value.ConfigureService(gameInstance);
+            }
+        }
         public static void Initialize()
         {
             Current = new ServiceLocator();

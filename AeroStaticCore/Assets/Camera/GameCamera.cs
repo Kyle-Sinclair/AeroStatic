@@ -5,6 +5,7 @@ using System.Globalization;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using MouseButton = UnityEngine.InputSystem.LowLevel.MouseButton;
 
 
 public class GameCamera : MonoBehaviour {
@@ -31,6 +32,8 @@ public class GameCamera : MonoBehaviour {
 
 
     private Transform _stick, _swivel;
+    public bool _debugRayCast = false;
+
     void Start() {
         _camera = GetComponentInChildren<Camera>();
         _audioListener = GetComponentInChildren<AudioListener>();
@@ -46,6 +49,7 @@ public class GameCamera : MonoBehaviour {
     }
 
     private void MoveCamera(float deltaTime) {
+        //Debug.Log("Move value is currently " + _moveValue.x);
         transform.Translate(_moveValue.x * _cameraMoveSpeed * deltaTime, 0f, _moveValue.y * _cameraMoveSpeed * deltaTime);
     }
 
@@ -55,17 +59,44 @@ public class GameCamera : MonoBehaviour {
     }
 
     private void ZoomCamera (float deltaTime){
+        //_stick.transform.position
+            //Vector3.SmoothDamp()
         _stick.transform.Translate(0f, 0f, _zoomValue.y * deltaTime * _cameraZoomSpeed);
     }
     private void ProcessLeftClick (float deltaTime) {
         //Debug.Log("Value stored for left mouse button click is : " + _leftMouseButtonClicked);
 
-        if (_leftMouseButtonClicked != 0f) {
+
+        if(_leftMouseButtonClicked != 0){
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 1000)) {
+                int xcoord = Mathf.FloorToInt(hit.point.x);
+                int zcoord = Mathf.FloorToInt(hit.point.z);
+
+                if (_debugRayCast) {
+                    Debug.DrawLine(hit.point,50f * Vector3.up, Color.black,5f);
+                    Debug.DrawLine(new Vector3(xcoord, hit.point.y,zcoord),new Vector3 ((xcoord + 1),hit.point.y,zcoord + 1),Color.green,5f);
+                    String tileDescription = "Selected tile is : x-coord - " + xcoord + ", ";
+                    tileDescription += "y-coord - " + hit.point.y + ", ";
+                    tileDescription += "z-coord - " + zcoord;
+                    
+                    Debug.Log(tileDescription);
+                    
+                }
+                //Debug.Log(hit.point);
+
+                }
+            }
+        }
+
+        /*if (_leftMouseButtonClicked != 0f) {
             //RaycastHit hit = new
             Vector2 MouseScreenPosition = Input.mousePosition;
+            RaycastHit
             Debug.Log(MouseScreenPosition);
-        }
-    }
+        }*/
+    
 
     public void DisableCamera() {
         _camera.enabled = false;

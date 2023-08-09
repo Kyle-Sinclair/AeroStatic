@@ -9,7 +9,10 @@ namespace Game_Systems.Services {
         public void Initialize() {
             
         }
-        
-        
+
+
+        public override void ConfigureService(GameInstance.GameInstance gameInstance) {
+            
+        }
     }
 }

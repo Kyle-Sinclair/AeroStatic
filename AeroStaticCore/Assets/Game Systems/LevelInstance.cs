@@ -10,14 +10,12 @@ namespace Game_Systems {
         
         void Start()
         {
-            print("Initializer active");
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
 
         }
 
 
         private void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.Scene currentScene) {
-            Debug.Log("The map scene should be active at this point");
             
             
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;

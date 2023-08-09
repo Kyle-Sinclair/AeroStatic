@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d18014068e158434793f22880b64644d, type: 3}
-  m_Name: CoreMapCreator
+  m_Script: {fileID: 11500000, guid: 3d2341dd6b4611844a19f0104ed06d26, type: 3}
+  m_Name: CoreConfiguration
   m_EditorClassIdentifier: 
-  _gridMaterials:
-  - {fileID: 2100000, guid: ef400cf634cf94c459d8b9443b6645fe, type: 2}
-  _planeMaterials: []
-  _mapSpawnType: 0
-  _debugIslandCreation: 1
+  _mapSize: 25
+  _numberOfBuildableLayers: 1
