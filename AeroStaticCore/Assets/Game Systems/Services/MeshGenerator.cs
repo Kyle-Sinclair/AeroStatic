@@ -30,6 +30,28 @@ namespace Game_Systems.Services {
         
         return new Tuple<List<Vector3>, List<int>>(vertices,triangles);
         }
+        
+        //TODO: Add an enum for island size that influences the row length of island tops.
+        public Tuple<List<Vector3>, List<int>> GenerateIslandMeshData(int dimensions, int xSeedCoord, int ySeedCoord, int zSeedCoord) { 
+            
+            var vertices = new List<Vector3>();
+            var triangles = new List<int>();
+            int z = 0;
+            int x = 0;
+            for (int i = 0; i < dimensions * dimensions; i++) {
+
+                z = i / 3; 
+                x = i % 3;
+                Vector3 v1 = new Vector3(x, 0, z);
+                Vector3 v2 = new Vector3(x, 0, z + 1);
+                Vector3 v3 = new Vector3(x + 1, 0, z);
+                Vector3 v4 = new Vector3(x + 1, 0, z + 1);
+                AddSquareTriangles(ref vertices, ref triangles, v1, v2, v3, v4); 
+                
+            }
+
+        return new Tuple<List<Vector3>, List<int>>(vertices,triangles);
+        }
         void AddSquareTriangles (ref List<Vector3> vertices,ref List<
         int> triangles, Vector3 v1, Vector3 v2, Vector3 v3,Vector3 v4) {
             int vertexIndex = vertices.Count;

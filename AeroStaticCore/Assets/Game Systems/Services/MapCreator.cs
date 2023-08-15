@@ -39,6 +39,8 @@ namespace Game_Systems.Services {
             BasePlaneRef.transform.localScale = new Vector3(_mapSize,_mapSize,1);
             
             CarveOutPlatforms();
+            
+            
             ServiceLocator.Current.Get<MapManager>().RecieveMap(BasePlaneRef);
         }
 
@@ -83,12 +85,12 @@ namespace Game_Systems.Services {
             }
 
             //Instantiate( GameObject.CreatePrimitive(PrimitiveType.Cube), new Vector3(xSeedCoord, 0, zSeedCoord), Quaternion.identity);
-            GenerateMeshOfPlatform(xSeedCoord, ySeedCoord, zSeedCoord);
+            GenerateMeshOfPlatform(3, xSeedCoord, ySeedCoord, zSeedCoord);
             //for(int i = )
             return null;
         }
 
-        private void GenerateMeshOfPlatform(int xSeedCoord, int ySeedCoord, int zSeedCoord) {
+        private void GenerateMeshOfPlatform(int dimensions, int xSeedCoord, int ySeedCoord, int zSeedCoord) {
 
             GameObject island = new GameObject("Tested Island");
             island.transform.position = new Vector3(xSeedCoord, ySeedCoord, zSeedCoord);
@@ -98,7 +100,7 @@ namespace Game_Systems.Services {
             island.AddComponent<MeshRenderer>().material = _gridMaterials[0];
             
             MeshGenerator meshGenerator = ServiceLocator.Current.Get<MeshGenerator>();
-            Tuple<List<Vector3>, List<int>> results = meshGenerator.GenerateIslandMeshData(xSeedCoord, ySeedCoord, zSeedCoord);
+            Tuple<List<Vector3>, List<int>> results = meshGenerator.GenerateIslandMeshData(3, xSeedCoord, ySeedCoord, zSeedCoord);
             
             Debug.Log("Vertex list contains " + results.Item1.Count);
             Debug.Log("Triangles list contains " + results.Item2.Count);
