@@ -16,6 +16,7 @@ namespace Game_Systems {
         private int _numberOfBuildableLayers;
 
         public GameObject BaseBoard { get; private set; }
+        public GameObject[] Islands { get; private set; }
         [SerializeField] private bool DEBUG_NATIVE_SETS = false;
 
         //private enum biome
@@ -42,32 +43,30 @@ namespace Game_Systems {
 
         }
 
-        public void RecieveMap(GameObject incomingBaseBoard) {
+        public void RecieveMap(GameObject incomingBaseBoard, GameObject[] islands ){
             BaseBoard = incomingBaseBoard;
-            int x = 0, y = 0, z = 0;
-            for (int i = 0; i < _dimensions * _dimensions; i++) {
-                _unpassableTiles.Add((new int3(x, y, z)));
-                x++;
-                if (x % 25 == 0) {
-                    x = 0;
-                    z++;
-                }
-            }
-            if (DEBUG_NATIVE_SETS) {
-                 _debugPassableTiles =
-                    _unpassableTiles.ToNativeArray(Allocator.Temp).ToArray();
-                
-              
-                foreach (var Var in _debugPassableTiles) {
-                    Debug.Log(Var);
-                    Debug.DrawRay(new Vector3(Var.x,Var.y,Var.z),Vector3.up,Color.black,5f);
-                }
-            }
+            Islands = islands;
         }
 
         private void OnDisable() {
             _passableTiles.Dispose();
             _unpassableTiles.Dispose();
+        }
+        
+        [ContextMenu("Recreate Map")]
+        private void RecreateMap() {
+            Destroy(BaseBoard);
+            foreach (var island in Islands) {
+                Destroy(island);
+            }
+
+            Islands = null;
+            _passableTiles.Dispose();
+            _unpassableTiles.Dispose();
+            _passableTiles = new NativeHashSet<int3>(_dimensions * _dimensions, Allocator.Persistent);
+            _unpassableTiles = new NativeHashSet<int3>(_dimensions * _dimensions, Allocator.Persistent);
+
+            ServiceLocator.Current.Get<MapCreator>().CreateMap();
         }
     }
 }

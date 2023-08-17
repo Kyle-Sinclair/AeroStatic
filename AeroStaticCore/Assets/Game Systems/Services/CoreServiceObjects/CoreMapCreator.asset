@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: CoreMapCreator
   m_EditorClassIdentifier: 
   _gridMaterials:
-  - {fileID: 2100000, guid: ef400cf634cf94c459d8b9443b6645fe, type: 2}
-  _planeMaterials: []
+  - {fileID: 2100000, guid: 79d557ae5a55e2749b3c14250edb2255, type: 2}
+  _planeMaterials:
+  - {fileID: 2100000, guid: b179396cacfd3784abf0124ce167d957, type: 2}
+  _meshGenFunctionName: 1
   _mapSpawnType: 0
   _debugIslandCreation: 1
