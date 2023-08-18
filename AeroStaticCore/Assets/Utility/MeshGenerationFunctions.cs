@@ -62,58 +62,124 @@ namespace Utility {
             int index = 0;
             for( int z = 0; z < zSize; z++) {
                 for (int x = 0; x < xSize; x++, index++) {
-                    vertices[index] = new Vector3(x, ySize, z);
-                    uv[index] = new Vector2((float)x / xSize, (float)z / zSize);
+                    vertices[index] = new Vector3(x, ySize - 1, z);
+                    uv[index] = new Vector2((float)x / (xSize - 1), (float)z / (zSize - 1));
 
                 }
             }
-
             int ti = 0;
             int vi = 0;
           
-            for (int  z = 0; z < zSize; z++) {
-                for (int x = 0; x < xSize; x++, ti += 6, vi++) {
+            for (int  z = 0; z < zSize - 1; z++, vi++) {
+                for (int x = 0; x < xSize - 1; x++, ti += 6, vi++) {
                     triangles[ti] = vi;
                     triangles[ti + 3] = triangles[ti + 2] = vi + 1;
-                    triangles[ti + 4] = triangles[ti + 1] = vi + xSize + 1;
-                    triangles[ti + 5] = vi + xSize + 2;
+                    triangles[ti + 4] = triangles[ti + 1] = vi + xSize ;
+                    triangles[ti + 5] = vi + xSize + 1;
+                
                 }
             }
             Debug.Log("Vertex index is at " + vi);
             Debug.Log("Triangle index is at " + ti);
             Debug.Log("index is at " + index);
-          
-           vi++;
-           ti += 6;
+
+            vi = index ;
             //Left face
             
-            for (int y = 0; y <= ySize; y++) {
-                for (int z = 0; z <= zSize; z++, index++) {
-                    vertices[index] = new Vector3(0, y, z);
-                    uv[index] = new Vector2((float)z / zSize, (float)y / ySize);
-
-                }
-            }
-            Debug.Log("Vertex index is at " + vi);
-            Debug.Log("Triangle index is at " + ti);
-            Debug.Log("index is at " + index);
             for (int y = 0; y < ySize; y++) {
-                for (int z = 0; z < zSize; z++, ti += 6, vi++) {
-                    triangles[ti] = vi;
-                    triangles[ti + 4] = triangles[ti + 1] = vi + zSize + 1;
-                    triangles[ti + 5] = vi + zSize + 2;
-                    triangles[ti + 3] = triangles[ti + 2] = vi + 1;
+                for (int z = 0; z < zSize; z++, index++) {
+                    vertices[index] = new Vector3(0, y, z);
+                    uv[index] = new Vector2((float)z / (zSize - 1), (float)y / (ySize -1 ));
 
                 }
             }
             Debug.Log("Vertex index is at " + vi);
             Debug.Log("Triangle index is at " + ti);
             Debug.Log("index is at " + index);
+            for (int y = 0; y < ySize - 1; y++,vi++) {
+                for (int z = 0; z < zSize - 1; z++, ti += 6, vi++) {
+                    triangles[ti] = vi;
+                    triangles[ti + 1] = triangles[ti + 4] = vi + 1;
+                    triangles[ti + 2] = triangles[ti + 3] = vi + zSize;
+                    triangles[ti + 5] = vi + zSize + 1;
+                
+                   
+                    Debug.Log("Vertex index in loop is at " + vi);
+
+                }
+            }
+            
+            vi = index;
+
+            for( int y = 0; y < ySize; y++) {
+                for (int z = 0; z < zSize; z++, index++) {
+                    vertices[index] = new Vector3(xSize - 1, y, z);
+                    uv[index] = new Vector2((float)z / (zSize - 1), (float)y / (ySize - 1));
+                    Debug.Log(new Vector3(xSize,y,z));
+                }
+            }
+            for (int y = 0; y < ySize - 1; y++,vi++) {
+                for (int z = 0; z < zSize - 1; z++, ti += 6, vi++) {
+                    triangles[ti] = vi;
+                    triangles[ti + 3] = triangles[ti + 2] = vi + 1;
+                    triangles[ti + 4] = triangles[ti + 1] = vi + zSize ;
+                    triangles[ti + 5] = vi + zSize + 1;
+                
+                   
+                    Debug.Log("Vertex index in loop is at " + vi);
+
+                }
+            }
+            
+            vi = index;
+
+            for( int x = 0; x < xSize; x++) {
+                for (int y = 0; y < ySize; y++, index++) {
+                    vertices[index] = new Vector3(x, y, zSize - 1);
+                    uv[index] = new Vector2((float)x / (xSize - 1), (float)y / (ySize - 1));
+                }
+            }
+            for (int y = 0; y < ySize - 1; y++,vi++) {
+                for (int z = 0; z < zSize - 1; z++, ti += 6, vi++) {
+                    triangles[ti] = vi;
+                    triangles[ti + 3] = triangles[ti + 2] = vi + 1;
+                    triangles[ti + 4] = triangles[ti + 1] = vi + zSize ;
+                    triangles[ti + 5] = vi + zSize + 1;
+                
+                   
+
+                }
+            }
+            
+            vi = index;
+            for( int x = 0; x < xSize; x++) {
+                for (int y = 0; y < ySize; y++, index++) {
+                    vertices[index] = new Vector3(x, y, 0);
+                    uv[index] = new Vector2((float)x / (xSize - 1), (float)y / (ySize - 1));
+                }
+            }
+            for (int y = 0; y < ySize - 1; y++,vi++) {
+                for (int z = 0; z < zSize - 1; z++, ti += 6, vi++) {
+                    triangles[ti] = vi;
+                    triangles[ti + 1] = triangles[ti + 4] = vi + 1;
+                    triangles[ti + 2] = triangles[ti + 3] = vi + zSize;
+                    triangles[ti + 5] = vi + zSize + 1;
+                
+                   
+                    Debug.Log("Vertex index in loop is at " + vi);
+
+                }
+            }
+            Debug.Log("Vertex index is at " + vi);
+            Debug.Log("Triangle index is at " + ti);
+            Debug.Log("index is at " + index);
+            
             return new Tuple<Vector3[],Vector2[], int[]>(vertices, uv,  triangles);
 
         
      
         }
+        
 
     }
 }

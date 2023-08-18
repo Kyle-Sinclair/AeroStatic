@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -79,40 +80,37 @@ namespace Game_Systems.Services {
 
         private GameObject[] CarveQuadrants() {
             List<GameObject> islands = new List<GameObject>();
-            //Make island 1 in lower left quadrant so x between 0 and half dimension,
-            //z between o and half dimensions
             
             Random range = new Random();
-            //TODO:Turn this into a for loop. Can probably generate the first position as a vector pointing from
-            //map center to first quadrant and then rotate each one by i * 90 degrees
-                int halfMapSize = _mapSize / 2;
-                int xSeedCoord = range.Next(2, halfMapSize - 2);
-                int ySeedCoord = 1;
-                int zSeedCoord = range.Next(2, halfMapSize -2);
-               
-                islands.Add(GenerateMeshOfPlatform(3, xSeedCoord, ySeedCoord, zSeedCoord));
-                xSeedCoord = range.Next(halfMapSize + 2, _mapSize - 2);
-                zSeedCoord = range.Next(2, halfMapSize - 2);
-                /*
-                islands.Add(GenerateMeshOfPlatform(range.Next(3,7), xSeedCoord, ySeedCoord, zSeedCoord));
-                xSeedCoord = range.Next(_mapSize/2  + 2, _mapSize - 2);
-                zSeedCoord = range.Next(_mapSize /2 + 2 , _mapSize - 2);
-                islands.Add(GenerateMeshOfPlatform(range.Next(3,7), xSeedCoord, ySeedCoord, zSeedCoord));  
-                xSeedCoord = range.Next(2, halfMapSize - 2);
-                zSeedCoord = range.Next(halfMapSize + 2 , _mapSize- 2);
-                islands.Add(GenerateMeshOfPlatform(range.Next(3,7), xSeedCoord, ySeedCoord, zSeedCoord));
-                */
+
+            int halfMapSize = _mapSize / 2;
+            Vector3[] spawnPoints = new Vector3[4];
+            int ySeedCoord = 0;
+
+            spawnPoints[0] = new Vector3(range.Next(2, halfMapSize - 2),ySeedCoord,range.Next(2, halfMapSize - 2));
+            spawnPoints[1] = new Vector3(range.Next(halfMapSize + 2, _mapSize - 2),ySeedCoord,range.Next(2, halfMapSize - 2));
+            spawnPoints[2] = new Vector3(range.Next(_mapSize/2  + 2, _mapSize - 2),ySeedCoord,range.Next(_mapSize /2 + 2 , _mapSize - 2));
+            spawnPoints[3] = new Vector3(range.Next(2, halfMapSize - 2),ySeedCoord,range.Next(halfMapSize + 2 , _mapSize- 2));
+
+            Vector3 spawnPoint;
             
-                return islands.ToArray();
+            for (int i = 0; i < 4; i++) {
+                    spawnPoint = spawnPoints[i];
+                    islands.Add(GenerateMeshOfPlatform(3, spawnPoint));
+            }
+
+                
+            
+            return islands.ToArray();
                 
             //for(int i = )
         }
 
-        private GameObject GenerateMeshOfPlatform(int dimensions, int xSeedCoord, int ySeedCoord, int zSeedCoord) {
+        private GameObject GenerateMeshOfPlatform(int dimensions,Vector3 spawnPoint) {
             DateTime beginTime=  DateTime.Now;
             
             GameObject island = new GameObject("Tested Island");
-            island.transform.position = new Vector3(xSeedCoord, ySeedCoord, zSeedCoord);
+            island.transform.position = new Vector3(spawnPoint.x, spawnPoint.y, spawnPoint.z);
             Mesh islandMesh = new Mesh();
             
             island.AddComponent<MeshFilter>().mesh = islandMesh;
@@ -121,7 +119,7 @@ namespace Game_Systems.Services {
             MeshGenerator meshGenerator = ServiceLocator.Current.Get<MeshGenerator>();
             MeshGenerationFunctions.MeshGeneratorFunction function = MeshGenerationFunctions.GetFunction(_meshGenFunctionName);
             Vector3Int sizes = new Vector3Int(dimensions, dimensions, dimensions);
-            Tuple<Vector3[], Vector2[],int[]> results = meshGenerator.GenerateIsland(function, sizes, xSeedCoord, ySeedCoord, zSeedCoord);
+            Tuple<Vector3[], Vector2[],int[]> results = meshGenerator.GenerateIsland(function, sizes, (int)spawnPoint.x, (int)spawnPoint.y, (int)spawnPoint.z);
         
             islandMesh.vertices = results.Item1;
             islandMesh.uv = results.Item2;
