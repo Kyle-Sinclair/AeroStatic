@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d18014068e158434793f22880b64644d, type: 3}
   m_Name: CoreMapCreator
   m_EditorClassIdentifier: 
+  _gridSelection: 0
   _gridMaterials:
   - {fileID: 2100000, guid: 79d557ae5a55e2749b3c14250edb2255, type: 2}
+  - {fileID: 2100000, guid: 5f70e12464ffb7444a09075851d5f94b, type: 2}
   _planeMaterials:
   - {fileID: 2100000, guid: b179396cacfd3784abf0124ce167d957, type: 2}
   _meshGenFunctionName: 1
+  NoiseSource: {fileID: 2800000, guid: 8b6ce4aa8bc22e045900e3a7db5f7e41, type: 3}
   _mapSpawnType: 0
   _debugIslandCreation: 1

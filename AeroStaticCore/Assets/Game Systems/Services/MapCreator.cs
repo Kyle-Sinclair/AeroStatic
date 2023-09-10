@@ -17,11 +17,17 @@ namespace Game_Systems.Services {
     public class MapCreator : GameService {
         
         [Header("Environment Art Assets")]
-        [SerializeField] private Material[] _gridMaterials;
-        [SerializeField] private Material[] _planeMaterials;
+        [SerializeField] private int _gridSelection;
 
+        [SerializeField] private Material[] _gridMaterials;
+
+        [SerializeField] private Material[] _planeMaterials;
+        [SerializeField] private int _islandSize = 0;
         [SerializeField] private MeshGenerationFunctions.MeshGenFunctionName _meshGenFunctionName;
     
+        
+        public Texture2D NoiseSource;
+
         private int _mapSize;
 
         [Serializable]
@@ -36,18 +42,19 @@ namespace Game_Systems.Services {
         [Header("Debug Options")]
         [SerializeField] 
         private bool _debugIslandCreation = false;
-        // Start is called before the first frame update
+
+        private Random _range;
+
         public void CreateMap() {
+            _range = new Random();
             GameObject BasePlane = Resources.Load<GameObject>("Art/Boards/BoardPrefabs/BaseQuad");
             GameObject BasePlaneRef = Instantiate(BasePlane);
-            BasePlaneRef.GetComponent<MeshRenderer>().material = _planeMaterials[0];
             
+            BasePlaneRef.GetComponent<MeshRenderer>().material = _planeMaterials[0];
             BasePlaneRef.transform.SetLocalPositionAndRotation(new Vector3((float)_mapSize/2, 0f, (float)_mapSize/2), Quaternion.Euler(90f,0f,0f));
             BasePlaneRef.transform.localScale = new Vector3(_mapSize,_mapSize,1);
             
             GameObject[] islands = CarveOutPlatforms();
-            
-            
             ServiceLocator.Current.Get<MapManager>().RecieveMap(BasePlaneRef, islands);
         }
 
@@ -81,22 +88,28 @@ namespace Game_Systems.Services {
         private GameObject[] CarveQuadrants() {
             List<GameObject> islands = new List<GameObject>();
             
-            Random range = new Random();
+          
 
             int halfMapSize = _mapSize / 2;
             Vector3[] spawnPoints = new Vector3[4];
             int ySeedCoord = 0;
 
-            spawnPoints[0] = new Vector3(range.Next(2, halfMapSize - 2),ySeedCoord,range.Next(2, halfMapSize - 2));
-            spawnPoints[1] = new Vector3(range.Next(halfMapSize + 2, _mapSize - 2),ySeedCoord,range.Next(2, halfMapSize - 2));
-            spawnPoints[2] = new Vector3(range.Next(_mapSize/2  + 2, _mapSize - 2),ySeedCoord,range.Next(_mapSize /2 + 2 , _mapSize - 2));
-            spawnPoints[3] = new Vector3(range.Next(2, halfMapSize - 2),ySeedCoord,range.Next(halfMapSize + 2 , _mapSize- 2));
+            spawnPoints[0] = new Vector3(_range.Next(2, halfMapSize - 2),ySeedCoord,_range.Next(2, halfMapSize - 2));
+            spawnPoints[1] = new Vector3(_range.Next(halfMapSize + 2, _mapSize - 2),ySeedCoord,_range.Next(2, halfMapSize - 2));
+            spawnPoints[2] = new Vector3(_range.Next(_mapSize/2  + 2, _mapSize - 2),ySeedCoord,_range.Next(_mapSize /2 + 2 , _mapSize - 2));
+            spawnPoints[3] = new Vector3(_range.Next(2, halfMapSize - 2),ySeedCoord,_range.Next(halfMapSize + 2 , _mapSize- 2));
 
             Vector3 spawnPoint;
             
             for (int i = 0; i < 4; i++) {
                     spawnPoint = spawnPoints[i];
-                    islands.Add(GenerateMeshOfPlatform(3, spawnPoint));
+                    if (_islandSize == 0) {
+                        islands.Add(GenerateMeshOfPlatform(_range.Next(3,10), spawnPoint));
+                    }
+                    else {
+                        islands.Add(GenerateMeshOfPlatform(_islandSize, spawnPoint));
+
+                    }
             }
 
                 
@@ -114,7 +127,7 @@ namespace Game_Systems.Services {
             Mesh islandMesh = new Mesh();
             
             island.AddComponent<MeshFilter>().mesh = islandMesh;
-            island.AddComponent<MeshRenderer>().material = _gridMaterials[0];
+            island.AddComponent<MeshRenderer>().material = _gridMaterials[_gridSelection];
             
             MeshGenerator meshGenerator = ServiceLocator.Current.Get<MeshGenerator>();
             MeshGenerationFunctions.MeshGeneratorFunction function = MeshGenerationFunctions.GetFunction(_meshGenFunctionName);
@@ -126,7 +139,9 @@ namespace Game_Systems.Services {
             islandMesh.triangles = results.Item3;
             
             islandMesh.RecalculateNormals();
-            
+            List<Vector3> vertices = new List<Vector3>();
+            islandMesh.GetVertices(vertices);
+         
             DateTime endTime =  DateTime.Now;
             TimeSpan taken = endTime.Subtract(beginTime);
             Debug.Log("Time taken for mesh generation was " + taken);
@@ -135,13 +150,15 @@ namespace Game_Systems.Services {
             
 
         }
-
+       
         private void EstablishBounds(int boardDimensions) {
             if (boardDimensions % 2 == 0) {
                 
             }
             
         }
+        
+       
         /*metalayer ideas 
         
         Science, Defence, Plunder Missions
@@ -158,6 +175,13 @@ namespace Game_Systems.Services {
         */
         public override void ConfigureService(GameInstance.GameInstance gameInstance) {
             _mapSize = gameInstance._mapConfig._mapSize;
+            MeshGenerationFunctions.NoiseSource = this.NoiseSource;
         }
+        
+        void OnEnable () {
+            Debug.Log("Updating noise source");
+            MeshGenerationFunctions.NoiseSource =  this.NoiseSource;
+        }
+
     }
 }

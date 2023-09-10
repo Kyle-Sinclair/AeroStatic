@@ -9,7 +9,6 @@ namespace Game_Systems.Services {
 
     public class MeshGenerator : GameService
     {
-
         //Method that generates vertices for a particular square
         //Method that adds those vertices in the correct order to the vertices list
         //method that adds the trianges correctly for a squarew

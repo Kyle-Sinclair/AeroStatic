@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
+using Unity.Mathematics;
+using Unity.VisualScripting;
+using UnityEditor.PackageManager.UI;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Utility {
     public static class MeshGenerationFunctions {
@@ -10,6 +14,10 @@ namespace Utility {
             int ySeedCoord, int zSeedCoord);
 
         public enum MeshGenFunctionName {GenerateBaseIslandMeshData, GenerateBoxIslandMesh }
+        public const float cellPerturbStrength = 2f;
+        public const float noiseScale = 0.003f;
+
+        public static Texture2D NoiseSource;
 
         private static MeshGeneratorFunction[] _meshGenFunctions = { GenerateBaseIslandMeshData , GenerateBoxIslandMeshData};
 
@@ -65,8 +73,9 @@ namespace Utility {
             int index = 0;
             for( int z = 0; z < zSize; z++) {
                 for (int x = 0; x < xSize; x++, index++) {
-                    vertices[index] = new Vector3(x, ySize - 1, z);
-                    uv[index] = new Vector2((float)x / (xSize - 1), (float)z / (zSize - 1));
+                    Vector3 vertex =  new Vector3(x, ySize - 1, z);
+                    vertices[index] = TopPerturb(vertex, xSeedCoord + vertex.x, zSeedCoord + vertex.z);
+                    uv[index] = new Vector2(vertices[index].x / (xSize - 1), vertices[index].z / (zSize - 1));
                 }
             }
             int ti = 0;
@@ -83,7 +92,9 @@ namespace Utility {
             //Left face
             for (int y = 0; y < ySize; y++) {
                 for (int z = 0; z < zSize; z++, index++) {
-                    vertices[index] = new Vector3(0, y, z);
+                    Vector3 vertex =  new Vector3(0, y, z);
+                    vertices[index] = XAxisSidePerturb(vertex, ySeedCoord + vertex.y, zSeedCoord + vertex.z);
+                    //vertices[index] = new Vector3(0, y, z);
                     uv[index] = new Vector2((float)z / (zSize - 1), (float)y / (ySize -1 ));
                 }
             }
@@ -99,9 +110,11 @@ namespace Utility {
             vi = index;
             for( int y = 0; y < ySize; y++) {
                 for (int z = 0; z < zSize; z++, index++) {
-                    vertices[index] = new Vector3(xSize - 1, y, z);
-                    uv[index] = new Vector2((float)z / (zSize - 1), (float)y / (ySize - 1));
-                    Debug.Log(new Vector3(xSize,y,z));
+
+                    Vector3 vertex = new Vector3(xSize - 1, y, z);
+                    vertices[index] = XAxisSidePerturb(vertex, ySeedCoord + vertex.y, zSeedCoord + vertex.z);
+                    //vertices[index] = new Vector3(0, y, z);
+                    uv[index] = new Vector2( vertices[index].z / (zSize - 1),  vertices[index].y / (ySize -1 ));
                 }
             }
             for (int y = 0; y < ySize - 1; y++,vi++) {
@@ -113,11 +126,16 @@ namespace Utility {
                     Debug.Log("Vertex index in loop is at " + vi);
                 }
             }
+            //Back face
             vi = index;
             for( int x = 0; x < xSize; x++) {
                 for (int y = 0; y < ySize; y++, index++) {
-                    vertices[index] = new Vector3(x, y, zSize - 1);
-                    uv[index] = new Vector2((float)x / (xSize - 1), (float)y / (ySize - 1));
+                   // vertices[index] = new Vector3(x, y, zSize - 1);
+                  //  uv[index] = new Vector2((float)x / (xSize - 1), (float)y / (ySize - 1));
+                    
+                    Vector3 vertex =  new Vector3(x, y, zSize - 1);
+                    vertices[index] = ZAxisSidePerturb(vertex, xSeedCoord + vertex.x, ySeedCoord + vertex.y);
+                    uv[index] = new Vector2( vertices[index].x / (zSize - 1),  vertices[index].y / (ySize -1 ));
                 }
             }
             for (int y = 0; y < ySize - 1; y++,vi++) {
@@ -128,11 +146,16 @@ namespace Utility {
                     triangles[ti + 5] = vi + zSize + 1;
                 }
             }
+            //Front Face
             vi = index;
             for( int x = 0; x < xSize; x++) {
                 for (int y = 0; y < ySize; y++, index++) {
-                    vertices[index] = new Vector3(x, y, 0);
-                    uv[index] = new Vector2((float)x / (xSize - 1), (float)y / (ySize - 1));
+                    //vertices[index] = new Vector3(x, y, 0);
+                    //uv[index] = new Vector2((float)x / (xSize - 1), (float)y / (ySize - 1));
+                    
+                    Vector3 vertex =  new Vector3(x, y, 0);
+                    vertices[index] = ZAxisSidePerturb(vertex, xSeedCoord + vertex.x, ySeedCoord + vertex.y);
+                    uv[index] = new Vector2( vertices[index].x / (zSize - 1),  vertices[index].y / (ySize -1 ));
                 }
             }
             for (int y = 0; y < ySize - 1; y++,vi++) {
@@ -143,10 +166,67 @@ namespace Utility {
                     triangles[ti + 5] = vi + zSize + 1;
                 }
             }
-            
+
+           
+
+           
             return new Tuple<Vector3[],Vector2[], int[]>(vertices, uv,  triangles);
         }
+
+
+
+
+        #region Perlin Noise Sampler Codes
+
         
 
+        #endregion
+        public static Vector4 SampleNoise (float positionX, float positionY) {
+            return NoiseSource.GetPixelBilinear(positionX * noiseScale,positionY * noiseScale);
+        }
+        
+        
+        
+        // These functions are designed to perturb vertices in a manner appropriate ot which orientation the 
+        // vertex's face should have
+        private static Vector3 TopPerturb (Vector3 position, float positionX, float positionY) {
+            if (NoiseSource == null) {
+                Debug.LogError("No noise source");
+            }
+            Debug.Log("perturbed paraemters are : " + positionX + ", " + positionY);
+            Vector4 sample = SampleNoise(positionX, positionY);
+            Debug.Log("perturbed sample equals : " + sample);
+            position.x +=  (sample.x  * 2f - 1f) * cellPerturbStrength ;
+            position.y += (sample.y * 2f -1f) ;
+            position.z += (sample.z  * 2f - 1f ) * cellPerturbStrength;
+            //Debug.Log("perturbed vertex equals : " + position);
+            return position;
+        }
+        private static Vector3 XAxisSidePerturb (Vector3 position, float positionX, float positionZ) {
+            if (NoiseSource == null) {
+                Debug.LogError("No noise source");
+            }
+            Vector4 sample = SampleNoise(positionX, positionZ);
+            Debug.Log("perturbed sample equals : " + sample);
+            position.x +=  (sample.x  * 2f - 1f);
+            position.y += (sample.y * 2f -1f) * cellPerturbStrength;
+            position.z += (sample.z  * 2f - 1f ) * cellPerturbStrength;
+            //Debug.Log("perturbed vertex equals : " + position);
+            return position;
+        }
+        private static Vector3 ZAxisSidePerturb (Vector3 position, float positionY, float positionZ) {
+            if (NoiseSource == null) {
+                Debug.LogError("No noise source");
+            }
+            Vector4 sample = SampleNoise(positionY, positionZ);
+            Debug.Log("perturbed sample equals : " + sample);
+            position.x +=  (sample.x  * 2f - 1f) * cellPerturbStrength;
+            position.y += (sample.y * 2f -1f) * cellPerturbStrength;
+            position.z += (sample.z  * 2f - 1f ) ;
+            //Debug.Log("perturbed vertex equals : " + position);
+            return position;
+        }
     }
 }
+    
+   
