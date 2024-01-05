@@ -59,7 +59,6 @@ namespace Game_Systems.GameInstance {
                 Debug.LogError($"Service Locator failed to initialize");
                 return;
             }
-
         }
 
         private void OnValidate() {

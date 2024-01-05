@@ -12,6 +12,5 @@ namespace Game_Systems.Structs {
             MidSeedCoordinate = midSeed;
             SkySeedCoordinate = skySeed;
         }
-        
     }
 }

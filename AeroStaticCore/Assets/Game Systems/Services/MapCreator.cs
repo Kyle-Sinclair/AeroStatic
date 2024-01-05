@@ -88,8 +88,6 @@ namespace Game_Systems.Services {
         private GameObject[] CarveQuadrants() {
             List<GameObject> islands = new List<GameObject>();
             
-          
-
             int halfMapSize = _mapSize / 2;
             Vector3[] spawnPoints = new Vector3[4];
             int ySeedCoord = 0;
@@ -116,7 +114,6 @@ namespace Game_Systems.Services {
             
             return islands.ToArray();
                 
-            //for(int i = )
         }
 
         private GameObject GenerateMeshOfPlatform(int dimensions,Vector3 spawnPoint) {
@@ -145,33 +142,23 @@ namespace Game_Systems.Services {
             DateTime endTime =  DateTime.Now;
             TimeSpan taken = endTime.Subtract(beginTime);
             Debug.Log("Time taken for mesh generation was " + taken);
-
             return island;
-            
-
         }
-       
         private void EstablishBounds(int boardDimensions) {
             if (boardDimensions % 2 == 0) {
                 
             }
-            
         }
         
        
-        /*metalayer ideas 
-        
+        /*
+        metalayer ideas 
         Science, Defence, Plunder Missions
         Hero units - commanders, have specialties
-        
         Do units flock to them? Bad game design, excellent programming thing
-        
         Commanders should be built as a particular kind of class, maybe like a card scriptable object?
-        
-        Look into that
-        
+        Look into that    
         Create terrain as platforms first, that's easier. 
-        
         */
         public override void ConfigureService(GameInstance.GameInstance gameInstance) {
             _mapSize = gameInstance._mapConfig._mapSize;
